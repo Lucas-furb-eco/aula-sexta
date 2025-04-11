@@ -1,0 +1,100 @@
+---
+title: "Lucas Leite"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(tidyverse)
+library(WDI)
+```
+
+```{r}
+#| label: graf1
+#| warning: false
+#| echo: false
+
+variaveis <- c("SP.DYN.LE00.IN", "SL.UEM.TOTL.ZS")
+
+expectativa_vida_br <- WDI(
+  indicator = "SP.DYN.LE00.IN", 
+  country = "BR", 
+  start = 1960, 
+  end = 2022
+)
+
+dados <- WDI(indicator = variaveis,
+             country = 'all', # TODOS = "all"
+             start = 2019, end = 2019)
+
+```
+
+## Gráfico de série temporal
+
+### Descrição Geral:
+
+O gráfico mostra a evolução da expectativa de vida ao nascer no Brasil ao longo do tempo, de 1960 a 2022.
+
+### Padrões observados:
+
+-   Crescimento contínuo (1960 até 2019): Há uma tendência clara de crescimento da expectativa de vida, saindo de aproximadamente 53 anos em 1960 para cerca de 75 anos em 2019. Esse aumento pode ser atribuído a melhorias em saúde pública, saneamento, vacinação, alimentação e qualidade de vida.
+
+    Queda acentuada em 2020: Há uma queda visível na expectativa de vida em 2020, chegando a cerca de 72 anos. Esse comportamento está relacionado à pandemia de COVID-19, que impactou significativamente a mortalidade no país.
+
+    Recuperação parcial após 2020: Após a queda, observa-se uma recuperação nos anos seguintes, mas sem ainda retornar ao pico anterior de 2019.
+
+### Conclusão:
+
+O gráfico mostra um panorama de progresso consistente na expectativa de vida do Brasil ao longo de seis décadas, interrompido por uma queda abrupta em 2020, seguida de uma recuperação parcial. A pandemia da COVID-19 é o principal fator por trás dessa queda.
+
+```{r}
+#| label: graf2
+#| warning: false
+#| echo: false
+
+ggplot(expectativa_vida_br, aes(x = year, y = SP.DYN.LE00.IN)) +
+  geom_line(color = "blue", size = 1) +
+  geom_point(color = "darkblue", size = 2) +
+  labs(
+    title = "Expectativa de Vida no Brasil (1960–2022)",
+    x = "Ano",
+    y = "Expectativa de Vida (anos)"
+  ) +
+  theme_minimal()
+```
+
+## Gráfico corte transversal
+
+### Descrição Geral:
+
+O gráfico mostra a relação entre a expectativa de vida (em anos) e a taxa de desemprego (%). Cada ponto azul representa uma observação — possivelmente países ou períodos específicos. A linha vermelha representa uma reta de tendência (regressão linear), que ajuda a visualizar o padrão geral entre as duas variáveis.
+
+### Padrões Observados:
+
+-   Os dados estão amplamente dispersos, especialmente entre taxas de desemprego de 0% a 15%, e expectativas de vida entre 65 e 85 anos.
+
+    Observa-se uma leve inclinação negativa da linha de tendência, indicando uma fraca correlação negativa: ou seja, à medida que a taxa de desemprego aumenta, a expectativa de vida tende a diminuir ligeiramente.
+
+    Há muitos outliers, por exemplo, alguns pontos com expectativa de vida baixa mesmo em contextos de baixo desemprego, e vice-versa, o que sugere que o desemprego não é o único determinante da expectativa de vida.
+
+### Conclusão:
+
+Apesar de existir uma leve tendência de que altas taxas de desemprego estejam associadas a uma expectativa de vida menor, a dispersão dos dados é grande e indica que a relação entre essas variáveis é fraca. Isso sugere que outros fatores — como acesso à saúde, educação, infraestrutura e políticas públicas — provavelmente têm maior influência na expectativa de vida do que o desemprego isoladamente.
+
+```{r}
+#| label: graf3
+#| warning: false
+#| echo: false
+
+ggplot(dados, aes(x = SL.UEM.TOTL.ZS, y = SP.DYN.LE00.IN)) +
+  geom_point(color = "blue", size = 3, alpha = 0.6) +          # Pontos azuis
+  labs(title = "Expectativa de Vida vs Taxa de Desemprego",    # Título
+       x = "Taxa de Desemprego (%)",                          # Eixo X
+       y = "Expectativa de Vida (anos)") +                    # Eixo Y
+  theme_minimal() +                                            # Tema limpo
+  geom_smooth(method = "lm", se = FALSE, color = "red")        # Linha de tendência (opcional)
+
+```
